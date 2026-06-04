@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { parseFrontierFile, parseFrontierSource } from '@shapeshift-labs/frontier-lang-parser';
 import { checkDocument } from '@shapeshift-labs/frontier-lang-checker';
 import { emitTypeScript } from '@shapeshift-labs/frontier-lang-typescript';
@@ -25,6 +26,15 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
 function output(io, value) { io.log(JSON.stringify(value, null, 2)); }
 function help(io) { io.log('frontier-lang <parse|check|hash|emit-ts> <file.frontier> [--out file] [--strict-effects]'); }
 
-if (import.meta.url === new URL(process.argv[1], 'file:').href) {
+function isDirectInvocation() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1]);
+  } catch {
+    return fileURLToPath(import.meta.url) === process.argv[1];
+  }
+}
+
+if (isDirectInvocation()) {
   runCli().catch((error) => { console.error(error.message); process.exitCode = 1; });
 }
