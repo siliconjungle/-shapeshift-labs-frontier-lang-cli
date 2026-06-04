@@ -1,0 +1,5 @@
+module TodoApp @id("mod_todo") {
+entity Todo @id("ent_todo") {
+  title @id("field_title"): Text { merge conflict }
+}
+}
