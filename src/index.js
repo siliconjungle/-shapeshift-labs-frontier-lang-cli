@@ -107,6 +107,8 @@ function inferLanguage(file) {
   if (/\.kt$/.test(file)) return 'kotlin';
   if (/\.cs$/.test(file)) return 'csharp';
   if (/\.swift$/.test(file)) return 'swift';
+  if (/\.php$/.test(file)) return 'php';
+  if (/\.rb$|\.rake$/.test(file)) return 'ruby';
   return 'unknown';
 }
 
