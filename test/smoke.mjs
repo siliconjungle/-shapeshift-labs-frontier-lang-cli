@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -47,6 +47,12 @@ await runCli(['import', nativePath, '--parser', 'estree'], { log: (value = '') =
 const nativeImport = JSON.parse(lines.join('\n'));
 assert.equal(nativeImport.language, 'javascript');
 assert.equal(nativeImport.universalAst.kind, 'frontier.lang.universalAst');
+assert.equal(nativeImport.semanticIndex.symbols.some((symbol) => symbol.name === 'addTodo'), true);
+const nativeOutPath = join(mkdtempSync(join(tmpdir(), 'frontier-lang-native-out-')), 'native-import.json');
+lines.length = 0;
+await runCli(['import', nativePath, '--parser', 'estree', '--out', nativeOutPath], { log: (value = '') => lines.push(String(value)) });
+assert.equal(lines.length, 0);
+assert.equal(JSON.parse(readFileSync(nativeOutPath, 'utf8')).semanticIndex.symbols[0].name, 'addTodo');
 
 const binDir = mkdtempSync(join(tmpdir(), 'frontier-lang-cli-bin-'));
 const binPath = join(binDir, 'frontier-lang');

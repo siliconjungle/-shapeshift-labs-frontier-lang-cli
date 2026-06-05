@@ -28,11 +28,12 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
   }
   if (command === 'import') {
     const language = readOption(rest, '--language') ?? inferLanguage(file);
-    return output(io, importNativeSource({
+    return outputMaybeFile(io, rest, importNativeSource({
       language,
       parser: readOption(rest, '--parser'),
       sourcePath: file,
       sourceHash: readOption(rest, '--source-hash'),
+      sourceText: source,
       nativeAstMetadata: { sourceBytes: source.length }
     }));
   }
@@ -50,7 +51,7 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
       evidence: [{ id: 'frontier_lang_cli_roundtrip', kind: 'test', status: 'passed', path: file, summary: `Parsed Frontier source and emitted ${target}.` }]
     });
     const result = compileFrontierDocument(envelope.document, { target, check: { strictEffects: rest.includes('--strict-effects') } });
-    return output(io, {
+    return outputMaybeFile(io, rest, {
       ok: result.ok,
       target: result.target,
       hash: result.hash,
@@ -59,8 +60,8 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
       output: result.output
     });
   }
-  if (command === 'parse') return output(io, document);
-  if (command === 'check') return output(io, checkDocument(document, { strictEffects: rest.includes('--strict-effects') }));
+  if (command === 'parse') return outputMaybeFile(io, rest, document);
+  if (command === 'check') return outputMaybeFile(io, rest, checkDocument(document, { strictEffects: rest.includes('--strict-effects') }));
   if (command === 'hash') return io.log(hashDocumentBase(document));
   if (command === 'ast') {
     const target = readOption(rest, '--target') ?? 'typescript';
@@ -86,6 +87,11 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
   throw new Error(`Unknown command: ${command}`);
 }
 function output(io, value) { io.log(JSON.stringify(value, null, 2)); }
+function outputMaybeFile(io, args, value) {
+  const json = JSON.stringify(value, null, 2);
+  const outIndex = args.indexOf('--out');
+  if (outIndex >= 0 && args[outIndex + 1]) writeFileSync(args[outIndex + 1], json + '\n'); else io.log(json);
+}
 function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
 function inferLanguage(file) {
