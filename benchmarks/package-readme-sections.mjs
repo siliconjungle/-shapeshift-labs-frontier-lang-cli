@@ -322,10 +322,18 @@ if (!delegated) {
   {
     "id": "frontier-lang-compiler",
     "name": "@shapeshift-labs/frontier-lang-compiler",
-    "role": "Compiler facade for Frontier Lang source documents, including parse, check, hash, diagnostics, and projection to TypeScript, JavaScript, Rust, Python, and C.",
+    "role": "Compiler facade for Frontier Lang source documents, including parse, check, hash, diagnostics, projection to TypeScript, JavaScript, Rust, Python, and C, and native source-import adapters for semantic merge evidence.",
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-compiler",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-compiler",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-compiler"
+  },
+  {
+    "id": "frontier-lang-swift",
+    "name": "@shapeshift-labs/frontier-lang-swift",
+    "role": "Swift source-language importer package for Frontier Lang semantic documents, including package-level metadata, SwiftSyntax adapter helpers, native import results, and semantic sidecar generation for SwiftSyntax/SwiftParser-shaped syntax trees.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-swift",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-swift",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-swift"
   },
   {
     "id": "frontier-lang-java",
