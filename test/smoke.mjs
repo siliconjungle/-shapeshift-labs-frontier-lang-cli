@@ -86,6 +86,15 @@ await runCli(['native-coverage', nativePath, '--parser', 'estree'], { log: (valu
 const nativeCoverage = JSON.parse(lines.join('\n'));
 assert.equal(nativeCoverage.kind, 'frontier.lang.nativeImportCoverageMatrix');
 assert.equal(nativeCoverage.summary.imports, 1);
+const nativeAfterPath = join(mkdtempSync(join(tmpdir(), 'frontier-lang-native-after-')), 'todo.js');
+writeFileSync(nativeAfterPath, 'export function addTodo() { return null; }\nexport function clearTodos() { return []; }\n');
+lines.length = 0;
+await runCli(['native-diff', nativePath, '--after', nativeAfterPath, '--parser', 'estree'], { log: (value = '') => lines.push(String(value)) });
+const nativeDiff = JSON.parse(lines.join('\n'));
+assert.equal(nativeDiff.kind, 'frontier.lang.nativeSourceChangeSet');
+assert.equal(nativeDiff.summary.sourceChanged, true);
+assert.equal(nativeDiff.summary.addedSymbols >= 1, true);
+assert.equal(nativeDiff.mergeCandidate.kind, 'frontier.lang.semanticMergeCandidate');
 const phpPath = join(mkdtempSync(join(tmpdir(), 'frontier-lang-native-php-')), 'todo.php');
 writeFileSync(phpPath, '<?php\nfunction addTodo($title) {}\n');
 lines.length = 0;

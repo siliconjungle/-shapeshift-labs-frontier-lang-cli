@@ -11,6 +11,7 @@ import {
   createNativeImportCoverageMatrix,
   createSemanticImportSidecar,
   createUniversalAstFromDocument,
+  diffNativeSources,
   importNativeSource,
   projectNativeImportToSource,
   projectFrontierAst,
@@ -57,6 +58,27 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
     const language = readOption(rest, '--language') ?? inferLanguage(file);
     const imported = importNativeFile(file, source, rest, { language });
     return outputMaybeFile(io, rest, createNativeImportCoverageMatrix({ imports: [imported] }));
+  }
+  if (command === 'native-diff') {
+    const afterPath = readOption(rest, '--after');
+    if (!afterPath) throw new Error('native-diff requires --after <file>');
+    const afterSource = readFileSync(afterPath, 'utf8');
+    const language = readOption(rest, '--language') ?? inferLanguage(afterPath) ?? inferLanguage(file);
+    return outputMaybeFile(io, rest, diffNativeSources({
+      id: readOption(rest, '--id'),
+      language,
+      parser: readOption(rest, '--parser'),
+      sourcePath: readOption(rest, '--source-path') ?? afterPath,
+      beforeSourceText: source,
+      afterSourceText: afterSource,
+      beforeSourceHash: readOption(rest, '--before-source-hash'),
+      afterSourceHash: readOption(rest, '--after-source-hash'),
+      regionPrefix: readOption(rest, '--region-prefix'),
+      evidenceId: readOption(rest, '--evidence-id'),
+      patchId: readOption(rest, '--patch-id'),
+      mergeCandidateId: readOption(rest, '--merge-candidate-id'),
+      metadata: { cli: true, beforePath: file, afterPath }
+    }));
   }
   const document = file ? parseFrontierFile(file, source) : parseFrontierSource(source);
   if (command === 'to-json') {
@@ -319,7 +341,7 @@ function idFragment(value) {
   return String(value ?? 'unknown').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'unknown';
 }
 
-function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-coverage|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--out file] [--strict-effects]'); }
+function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-coverage|native-diff|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
 function readIntegerOption(args, flag) {
   const value = readOption(args, flag);
