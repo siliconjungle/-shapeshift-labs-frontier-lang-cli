@@ -190,7 +190,7 @@ npm install -g @shapeshift-labs/frontier-lang-cli
 frontier-lang check examples/todo.frontier
 ```
 
-Commands: `parse`, `check`, `hash`, `emit`, `emit-ts`, `emit-js`, `emit-rust`, `emit-python`, and `emit-c`.
+Commands: `parse`, `check`, `hash`, `ast`, `capabilities`, `to-json`, `from-json`, `import`, `roundtrip`, `corpus-roundtrip`, `emit`, `emit-ts`, `emit-js`, `emit-rust`, `emit-python`, and `emit-c`.
 
 ```sh
 frontier-lang emit app.frontier --target rust --out app.rs

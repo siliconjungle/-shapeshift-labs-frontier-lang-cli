@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -72,6 +72,29 @@ await runCli(['import', rubyPath], { log: (value = '') => lines.push(String(valu
 const rubyImport = JSON.parse(lines.join('\n'));
 assert.equal(rubyImport.language, 'ruby');
 assert.equal(rubyImport.semanticIndex.symbols.some((symbol) => symbol.name === 'add_todo'), true);
+const corpusDir = mkdtempSync(join(tmpdir(), 'frontier-lang-corpus-'));
+writeFileSync(join(corpusDir, 'fixture.frontier'), readFileSync('test/fixture.frontier', 'utf8'));
+writeFileSync(join(corpusDir, 'todo.php'), '<?php\nfunction addTodo($title) {}\n');
+writeFileSync(join(corpusDir, 'todo.rb'), 'def add_todo(title)\nend\n');
+mkdirSync(join(corpusDir, 'node_modules'));
+writeFileSync(join(corpusDir, 'node_modules', 'ignored.js'), 'export function ignored() {}');
+lines.length = 0;
+await runCli(['corpus-roundtrip', corpusDir, '--target', 'typescript'], { log: (value = '') => lines.push(String(value)) });
+const corpusRoundtrip = JSON.parse(lines.join('\n'));
+assert.equal(corpusRoundtrip.kind, 'frontier.lang.corpusRoundtrip');
+assert.equal(corpusRoundtrip.total, 3);
+assert.equal(corpusRoundtrip.failed, 0);
+assert.ok(corpusRoundtrip.sourceMapCount >= 2);
+assert.ok(corpusRoundtrip.lossCount >= 2);
+assert.ok(corpusRoundtrip.readiness['ready-with-losses'] >= 2);
+assert.equal(corpusRoundtrip.files.some((entry) => entry.language === 'php'), true);
+assert.equal(corpusRoundtrip.files.some((entry) => entry.language === 'ruby'), true);
+const corpusOutPath = join(mkdtempSync(join(tmpdir(), 'frontier-lang-corpus-out-')), 'corpus.json');
+lines.length = 0;
+await runCli(['corpus-roundtrip', corpusDir, '--target', 'typescript', '--out', corpusOutPath], { log: (value = '') => lines.push(String(value)) });
+assert.equal(lines.length, 0);
+const corpusOut = JSON.parse(readFileSync(corpusOutPath, 'utf8'));
+assert.equal(corpusOut.kind, 'frontier.lang.corpusRoundtrip');
 
 const binDir = mkdtempSync(join(tmpdir(), 'frontier-lang-cli-bin-'));
 const binPath = join(binDir, 'frontier-lang');

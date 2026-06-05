@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseFrontierFile, parseFrontierSource } from '@shapeshift-labs/frontier-lang-parser';
 import { checkDocument } from '@shapeshift-labs/frontier-lang-checker';
@@ -18,6 +19,9 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
   const [command, file, ...rest] = argv;
   if (!command || command === 'help' || command === '--help') return help(io);
   if (!file && command !== 'version') throw new Error(`Missing input file for ${command}`);
+  if (command === 'corpus-roundtrip') {
+    return outputMaybeFile(io, rest, runCorpusRoundtrip(file, rest));
+  }
   const source = file ? readFileSync(file, 'utf8') : '';
   if (command === 'from-json') {
     const envelope = readUniversalAstJson(source);
@@ -92,7 +96,140 @@ function outputMaybeFile(io, args, value) {
   const outIndex = args.indexOf('--out');
   if (outIndex >= 0 && args[outIndex + 1]) writeFileSync(args[outIndex + 1], json + '\n'); else io.log(json);
 }
-function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--out file] [--strict-effects]'); }
+function runCorpusRoundtrip(inputPath, args) {
+  const target = readOption(args, '--target') ?? 'typescript';
+  const entries = collectCorpusEntries(inputPath);
+  const files = entries.map((entry) => corpusRoundtripFile(entry, { target, parser: readOption(args, '--parser') }));
+  const failed = files.filter((fileResult) => !fileResult.ok);
+  return {
+    kind: 'frontier.lang.corpusRoundtrip',
+    version: 1,
+    inputPath,
+    target,
+    total: files.length,
+    passed: files.length - failed.length,
+    failed: failed.length,
+    sourceMapCount: files.reduce((sum, fileResult) => sum + (fileResult.sourceMapCount ?? 0), 0),
+    lossCount: files.reduce((sum, fileResult) => sum + (fileResult.lossCount ?? 0), 0),
+    readiness: files.reduce((counts, fileResult) => {
+      for (const readiness of fileResult.mergeReadiness ?? []) counts[readiness] = (counts[readiness] ?? 0) + 1;
+      return counts;
+    }, {}),
+    files
+  };
+}
+
+function corpusRoundtripFile(entry, options) {
+  const path = entry.path;
+  try {
+    const source = readFileSync(path, 'utf8');
+    const language = entry.language ?? inferLanguage(path);
+    if (/\.frontier$/i.test(path)) {
+      const document = parseFrontierFile(path, source);
+      const envelope = createUniversalAstFromDocument(document, {
+        evidence: [{ id: `frontier_lang_cli_corpus_${idFragment(path)}`, kind: 'test', status: 'passed', path, summary: 'Corpus Frontier source parsed into universal AST.' }]
+      });
+      const encoded = writeUniversalAstJson(envelope);
+      const decoded = readUniversalAstJson(encoded);
+      const result = compileFrontierDocument(decoded.document, { target: options.target });
+      return {
+        path,
+        language: 'frontier',
+        kind: 'frontierSource',
+        ok: result.ok && decoded.document.id === document.id,
+        hash: result.hash,
+        sourceMapCount: envelope.sourceMaps?.length ?? 0,
+        lossCount: envelope.losses?.length ?? 0,
+        evidenceCount: envelope.evidence?.length ?? 0,
+        diagnostics: result.diagnostics,
+        outputBytes: result.output.length,
+        jsonBytes: encoded.length
+      };
+    }
+    const imported = importNativeSource({
+      language,
+      parser: entry.parser ?? options.parser,
+      sourcePath: path,
+      sourceText: source
+    });
+    const encoded = writeUniversalAstJson(imported.universalAst);
+    const decoded = readUniversalAstJson(encoded);
+    return {
+      path,
+      language,
+      kind: 'nativeSource',
+      ok: decoded.document.id === imported.document.id,
+      sourceMapCount: imported.sourceMaps?.length ?? 0,
+      sourceMapMappingCount: (imported.sourceMaps ?? []).reduce((sum, sourceMap) => sum + (sourceMap.mappings?.length ?? 0), 0),
+      lossCount: imported.losses?.length ?? 0,
+      evidenceCount: imported.evidence?.length ?? 0,
+      symbolCount: imported.semanticIndex?.symbols?.length ?? 0,
+      occurrenceCount: imported.semanticIndex?.occurrences?.length ?? 0,
+      mergeReadiness: (imported.mergeCandidates ?? []).map((candidate) => candidate.readiness),
+      jsonBytes: encoded.length
+    };
+  } catch (error) {
+    return {
+      path,
+      language: entry.language ?? inferLanguage(path),
+      kind: 'error',
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+function collectCorpusEntries(inputPath) {
+  const absolute = resolve(inputPath);
+  const stat = statSync(absolute);
+  if (stat.isDirectory()) {
+    return collectCorpusDirectory(absolute).map((path) => ({ path }));
+  }
+  if (/\.json$/i.test(absolute)) {
+    return readCorpusManifest(absolute);
+  }
+  return [{ path: absolute }];
+}
+
+function collectCorpusDirectory(root) {
+  const files = [];
+  for (const item of readdirSync(root, { withFileTypes: true })) {
+    const path = join(root, item.name);
+    if (item.isDirectory()) {
+      if (!isIgnoredCorpusDirectory(item.name)) files.push(...collectCorpusDirectory(path));
+      continue;
+    }
+    if (item.isFile() && isCorpusSourceFile(path)) files.push(path);
+  }
+  return files.sort();
+}
+
+function readCorpusManifest(path) {
+  const manifest = JSON.parse(readFileSync(path, 'utf8'));
+  const base = dirname(path);
+  const rawEntries = Array.isArray(manifest) ? manifest : manifest.files ?? manifest.entries ?? [];
+  return rawEntries.map((entry) => {
+    if (typeof entry === 'string') return { path: resolve(base, entry) };
+    return {
+      ...entry,
+      path: resolve(base, entry.path ?? entry.file)
+    };
+  });
+}
+
+function isIgnoredCorpusDirectory(name) {
+  return name === 'node_modules' || name === '.git' || name === 'dist' || name === 'coverage' || name === '.next';
+}
+
+function isCorpusSourceFile(path) {
+  return /\.(frontier|[cm]?tsx?|m?jsx?|rs|py|c|h|hpp|cpp|cc|cxx|go|java|kt|cs|swift|php|rb|rake)$/i.test(path);
+}
+
+function idFragment(value) {
+  return String(value ?? 'unknown').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'unknown';
+}
+
+function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
 function inferLanguage(file) {
   if (!file) return 'unknown';
