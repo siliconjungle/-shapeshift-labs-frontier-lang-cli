@@ -9,6 +9,7 @@ frontier-lang capabilities app.frontier --target typescript --platform node
 frontier-lang import src/todo.ts --sidecar --out native-import.json
 frontier-lang native-diff src/todo.before.ts --after src/todo.after.ts --out native-change-set.json
 frontier-lang project-native native-import.json --source-only --out restored.ts
+frontier-lang native-compile native-import.json --target rust --emit-on-blocked --source-only --out todo.rs
 frontier-lang native-coverage src/todo.ts
 ```
 
@@ -194,7 +195,7 @@ npm install -g @shapeshift-labs/frontier-lang-cli
 frontier-lang check examples/todo.frontier
 ```
 
-Commands: `parse`, `check`, `hash`, `ast`, `capabilities`, `to-json`, `from-json`, `import`, `project-native`, `native-coverage`, `native-diff`, `roundtrip`, `corpus-roundtrip`, `emit`, `emit-ts`, `emit-js`, `emit-rust`, `emit-python`, and `emit-c`.
+Commands: `parse`, `check`, `hash`, `ast`, `capabilities`, `to-json`, `from-json`, `import`, `project-native`, `native-compile`, `native-coverage`, `native-diff`, `roundtrip`, `corpus-roundtrip`, `emit`, `emit-ts`, `emit-js`, `emit-rust`, `emit-python`, and `emit-c`.
 
 ```sh
 frontier-lang emit app.frontier --target rust --out app.rs

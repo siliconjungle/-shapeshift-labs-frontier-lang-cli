@@ -6,6 +6,7 @@ import { parseFrontierFile, parseFrontierSource } from '@shapeshift-labs/frontie
 import { checkDocument } from '@shapeshift-labs/frontier-lang-checker';
 import { hashDocumentBase } from '@shapeshift-labs/frontier-lang-kernel';
 import {
+  compileNativeSource,
   compileFrontierDocument,
   createNativeSourcePreservation,
   createNativeImportCoverageMatrix,
@@ -53,6 +54,30 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
       return;
     }
     return outputMaybeFile(io, rest, projection);
+  }
+  if (command === 'native-compile') {
+    const parsed = tryParseJson(source);
+    const input = parsed ? readNativeImportForProjection(file, source, rest) : {
+      language: readOption(rest, '--language') ?? inferLanguage(file),
+      parser: readOption(rest, '--parser'),
+      sourcePath: readOption(rest, '--source-path') ?? file,
+      sourceHash: readOption(rest, '--source-hash'),
+      sourceText: source,
+      nativeAstMetadata: { sourceBytes: source.length, cli: true }
+    };
+    const result = compileNativeSource(input, {
+      target: readOption(rest, '--target'),
+      parser: readOption(rest, '--parser'),
+      emitOnBlocked: rest.includes('--emit-on-blocked'),
+      metadata: { cli: true, inputPath: file }
+    });
+    if (rest.includes('--source-only')) {
+      const outIndex = rest.indexOf('--out');
+      if (outIndex >= 0 && rest[outIndex + 1]) writeFileSync(rest[outIndex + 1], result.output);
+      else io.log(result.output);
+      return;
+    }
+    return outputMaybeFile(io, rest, result);
   }
   if (command === 'native-coverage') {
     const language = readOption(rest, '--language') ?? inferLanguage(file);
@@ -341,7 +366,7 @@ function idFragment(value) {
   return String(value ?? 'unknown').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'unknown';
 }
 
-function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-coverage|native-diff|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--out file] [--strict-effects]'); }
+function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-compile|native-coverage|native-diff|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--emit-on-blocked] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
 function readIntegerOption(args, flag) {
   const value = readOption(args, flag);

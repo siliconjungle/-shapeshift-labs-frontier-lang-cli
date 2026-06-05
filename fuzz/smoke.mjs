@@ -26,3 +26,16 @@ action updateItem @id("action_${index}") {
   await runCli(['emit', file, '--target', targets[index % targets.length]], { log: (value = '') => lines.push(String(value)) });
   assert.ok(lines.join('\n').length > 0);
 }
+
+for (let index = 0; index < 20; index += 1) {
+  const file = join(dir, `native-${index}.js`);
+  writeFileSync(file, `export function nativeCase${index}(value) { return value ?? ${index}; }\n`);
+  const lines = [];
+  const args = ['native-compile', file];
+  if (index % 3 === 0) args.push('--target', 'rust', '--emit-on-blocked');
+  await runCli(args, { log: (value = '') => lines.push(String(value)) });
+  const result = JSON.parse(lines.join('\n'));
+  assert.equal(result.kind, 'frontier.lang.nativeSourceCompileResult');
+  assert.ok(result.output.length > 0);
+  assert.ok(['javascript', 'rust'].includes(result.target));
+}
