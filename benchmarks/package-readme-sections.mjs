@@ -336,6 +336,14 @@ if (!delegated) {
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-swift"
   },
   {
+    "id": "frontier-lang-kotlin",
+    "name": "@shapeshift-labs/frontier-lang-kotlin",
+    "role": "Kotlin PSI source-language importer package for Frontier Lang semantic documents, including package-level metadata, Kotlin PSI adapter helpers, native import results, and semantic sidecar generation for Kotlin PSI/KtFile-shaped syntax trees.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-kotlin",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-kotlin",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-kotlin"
+  },
+  {
     "id": "frontier-lang-java",
     "name": "@shapeshift-labs/frontier-lang-java",
     "role": "Java source-language importer package for Frontier Lang semantic documents, including package-level metadata, Java AST adapter helpers, native import results, and semantic sidecar generation for javac/JDT/JavaParser-shaped ASTs.",
