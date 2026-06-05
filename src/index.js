@@ -7,8 +7,12 @@ import { checkDocument } from '@shapeshift-labs/frontier-lang-checker';
 import { hashDocumentBase } from '@shapeshift-labs/frontier-lang-kernel';
 import {
   compileFrontierDocument,
+  createNativeSourcePreservation,
+  createNativeImportCoverageMatrix,
+  createSemanticImportSidecar,
   createUniversalAstFromDocument,
   importNativeSource,
+  projectNativeImportToSource,
   projectFrontierAst,
   readUniversalAstJson,
   resolveCapabilityAdapters,
@@ -31,15 +35,28 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
     return io.log(result.output);
   }
   if (command === 'import') {
+    const imported = importNativeFile(file, source, rest);
+    if (rest.includes('--sidecar-only')) return outputMaybeFile(io, rest, createSemanticImportSidecar(imported));
+    if (rest.includes('--sidecar')) {
+      return outputMaybeFile(io, rest, { import: imported, sidecar: createSemanticImportSidecar(imported) });
+    }
+    return outputMaybeFile(io, rest, imported);
+  }
+  if (command === 'project-native') {
+    const imported = readNativeImportForProjection(file, source, rest);
+    const projection = projectNativeImportToSource(imported, { preferPreservedSource: !rest.includes('--stubs') });
+    if (rest.includes('--source-only')) {
+      const outIndex = rest.indexOf('--out');
+      if (outIndex >= 0 && rest[outIndex + 1]) writeFileSync(rest[outIndex + 1], projection.sourceText);
+      else io.log(projection.sourceText);
+      return;
+    }
+    return outputMaybeFile(io, rest, projection);
+  }
+  if (command === 'native-coverage') {
     const language = readOption(rest, '--language') ?? inferLanguage(file);
-    return outputMaybeFile(io, rest, importNativeSource({
-      language,
-      parser: readOption(rest, '--parser'),
-      sourcePath: file,
-      sourceHash: readOption(rest, '--source-hash'),
-      sourceText: source,
-      nativeAstMetadata: { sourceBytes: source.length }
-    }));
+    const imported = importNativeFile(file, source, rest, { language });
+    return outputMaybeFile(io, rest, createNativeImportCoverageMatrix({ imports: [imported] }));
   }
   const document = file ? parseFrontierFile(file, source) : parseFrontierSource(source);
   if (command === 'to-json') {
@@ -111,6 +128,11 @@ function runCorpusRoundtrip(inputPath, args) {
     failed: failed.length,
     sourceMapCount: files.reduce((sum, fileResult) => sum + (fileResult.sourceMapCount ?? 0), 0),
     lossCount: files.reduce((sum, fileResult) => sum + (fileResult.lossCount ?? 0), 0),
+    sourcePreservationCount: files.filter((fileResult) => fileResult.sourcePreservationId).length,
+    projectionModes: files.reduce((counts, fileResult) => {
+      if (fileResult.projectionMode) counts[fileResult.projectionMode] = (counts[fileResult.projectionMode] ?? 0) + 1;
+      return counts;
+    }, {}),
     readiness: files.reduce((counts, fileResult) => {
       for (const readiness of fileResult.mergeReadiness ?? []) counts[readiness] = (counts[readiness] ?? 0) + 1;
       return counts;
@@ -152,6 +174,7 @@ function corpusRoundtripFile(entry, options) {
       sourcePath: path,
       sourceText: source
     });
+    const projection = projectNativeImportToSource(imported);
     const encoded = writeUniversalAstJson(imported.universalAst);
     const decoded = readUniversalAstJson(encoded);
     return {
@@ -165,6 +188,11 @@ function corpusRoundtripFile(entry, options) {
       evidenceCount: imported.evidence?.length ?? 0,
       symbolCount: imported.semanticIndex?.symbols?.length ?? 0,
       occurrenceCount: imported.semanticIndex?.occurrences?.length ?? 0,
+      sourcePreservationId: imported.metadata?.sourcePreservationId,
+      sourcePreservationExact: imported.metadata?.sourcePreservation?.summary?.exactSourceAvailable === true,
+      projectionMode: projection.mode,
+      projectionReadiness: projection.readiness?.readiness,
+      projectionLossCount: projection.losses?.length ?? 0,
       mergeReadiness: (imported.mergeCandidates ?? []).map((candidate) => candidate.readiness),
       jsonBytes: encoded.length
     };
@@ -217,6 +245,68 @@ function readCorpusManifest(path) {
   });
 }
 
+function importNativeFile(file, source, args, defaults = {}) {
+  const language = defaults.language ?? readOption(args, '--language') ?? inferLanguage(file);
+  const sourceHash = readOption(args, '--source-hash');
+  const sourcePreservation = sourcePreservationOptionsRequested(args)
+    ? createNativeSourcePreservation({
+      language,
+      sourcePath: file,
+      sourceHash,
+      sourceText: source,
+      includeSourceText: !args.includes('--omit-source-text'),
+      includeTokens: !args.includes('--no-tokens'),
+      includeTrivia: !args.includes('--no-trivia'),
+      includeDirectives: !args.includes('--no-directives'),
+      maxTokens: readIntegerOption(args, '--max-tokens'),
+      maxTrivia: readIntegerOption(args, '--max-trivia'),
+      maxDirectives: readIntegerOption(args, '--max-directives'),
+      metadata: { cli: true }
+    })
+    : undefined;
+  return importNativeSource({
+    language,
+    parser: readOption(args, '--parser'),
+    sourcePath: file,
+    sourceHash,
+    sourceText: source,
+    sourcePreservation,
+    nativeAstMetadata: { sourceBytes: source.length }
+  });
+}
+
+function readNativeImportForProjection(file, source, args) {
+  const parsed = tryParseJson(source);
+  if (!parsed) return importNativeFile(file, source, args);
+  if (parsed.kind === 'frontier.lang.universalAst') {
+    const nativeSource = parsed.nativeSources?.[0];
+    return {
+      id: parsed.metadata?.nativeImportId ?? `import_${idFragment(parsed.id)}`,
+      language: parsed.metadata?.sourceLanguage ?? nativeSource?.language ?? readOption(args, '--language') ?? inferLanguage(file),
+      sourcePath: parsed.metadata?.sourcePath ?? nativeSource?.sourcePath,
+      universalAst: parsed,
+      nativeSource,
+      nativeAst: nativeSource?.ast,
+      semanticIndex: parsed.semanticIndex,
+      sourceMaps: parsed.sourceMaps,
+      losses: parsed.losses,
+      evidence: parsed.evidence,
+      metadata: parsed.metadata ?? {}
+    };
+  }
+  return parsed;
+}
+
+function tryParseJson(source) {
+  const trimmed = source.trim();
+  if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return undefined;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return undefined;
+  }
+}
+
 function isIgnoredCorpusDirectory(name) {
   return name === 'node_modules' || name === '.git' || name === 'dist' || name === 'coverage' || name === '.next';
 }
@@ -229,8 +319,23 @@ function idFragment(value) {
   return String(value ?? 'unknown').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'unknown';
 }
 
-function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--out file] [--strict-effects]'); }
+function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-coverage|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
+function readIntegerOption(args, flag) {
+  const value = readOption(args, flag);
+  if (value === undefined) return undefined;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+function sourcePreservationOptionsRequested(args) {
+  return args.includes('--omit-source-text')
+    || args.includes('--no-tokens')
+    || args.includes('--no-trivia')
+    || args.includes('--no-directives')
+    || args.includes('--max-tokens')
+    || args.includes('--max-trivia')
+    || args.includes('--max-directives');
+}
 function inferLanguage(file) {
   if (!file) return 'unknown';
   if (/\.[cm]?tsx?$/.test(file)) return 'typescript';
