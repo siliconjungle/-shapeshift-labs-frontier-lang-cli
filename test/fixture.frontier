@@ -1,5 +1,35 @@
 module TodoApp @id("mod_todo") {
+type TodoInput @id("type_todo_input") {
+  title: Text
+  tags: Set<Text>
+}
+lattice TagSet @id("lat_tag_set") {
+  carrier Set<Text>
+  laws semilattice, commutative
+  frontierCrdt createCrdtOrSetLattice
+}
 entity Todo @id("ent_todo") {
   title @id("field_title"): Text { merge conflict }
+  tags @id("field_tags"): Set<Text> { merge union lattice lat_tag_set crdt or-set }
+}
+extern persistTodo @id("extern_persist") {
+  language typescript
+  symbol persistTodo
+  input TodoInput
+  returns Patch
+  effects storage
+}
+capability HttpRequest @id("cap_http") {
+  capability http.request
+  category network
+  input Json
+  returns Json
+  adapter typescript symbol fetch platform node package undici kind library
+  adapter rust symbol reqwest::Client::execute platform native package reqwest kind library
+}
+action addTodo @id("action_add") {
+  input TodoInput
+  returns Patch
+  uses storage, http.request
 }
 }

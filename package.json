@@ -1,6 +1,6 @@
 {
   "name": "@shapeshift-labs/frontier-lang-cli",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "description": "Command line interface for parsing, checking, hashing, and emitting Frontier Lang projects.",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,8 +21,13 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "npm run build && node test/smoke.mjs",
+    "fuzz": "npm run build && node fuzz/smoke.mjs",
+    "bench": "npm run build && node bench/smoke.mjs",
     "prepare": "npm run build",
-    "prepack": "npm test"
+    "prepack": "npm test",
+    "pack:dry": "npm pack --dry-run",
+    "readme:packages": "node benchmarks/package-readme-sections.mjs",
+    "readme:packages:check": "node benchmarks/package-readme-sections.mjs --check"
   },
   "keywords": [
     "frontier",
@@ -45,10 +50,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@shapeshift-labs/frontier-lang-kernel": "^0.1.1",
-    "@shapeshift-labs/frontier-lang-parser": "^0.1.0",
-    "@shapeshift-labs/frontier-lang-checker": "^0.1.0",
-    "@shapeshift-labs/frontier-lang-typescript": "^0.1.0"
+    "@shapeshift-labs/frontier-lang-kernel": "0.3.0",
+    "@shapeshift-labs/frontier-lang-parser": "0.3.0",
+    "@shapeshift-labs/frontier-lang-checker": "0.3.0",
+    "@shapeshift-labs/frontier-lang-compiler": "0.2.0"
   },
   "bin": {
     "frontier-lang": "dist/index.js"
