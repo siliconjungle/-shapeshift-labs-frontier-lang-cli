@@ -1,0 +1,1 @@
+import '../bench/smoke.mjs';

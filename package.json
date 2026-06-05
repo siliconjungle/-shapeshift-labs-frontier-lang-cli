@@ -16,11 +16,14 @@
     "dist",
     "examples",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "bench",
+    "benchmarks/package-bench.mjs"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "npm run build && node test/smoke.mjs",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p test/tsconfig.json",
     "fuzz": "npm run build && node fuzz/smoke.mjs",
     "bench": "npm run build && node bench/smoke.mjs",
     "prepare": "npm run build",
@@ -57,5 +60,8 @@
   },
   "bin": {
     "frontier-lang": "dist/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }
