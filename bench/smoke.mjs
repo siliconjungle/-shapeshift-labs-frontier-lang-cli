@@ -20,4 +20,10 @@ for (let index = 0; index < 25; index += 1) {
   await runCli(['native-compile', nativePath, '--target', index % 2 ? 'javascript' : 'rust', '--emit-on-blocked'], { log: (value = '') => lines.push(String(value)) });
   nativeBytes += lines.join('\n').length;
 }
-console.log(JSON.stringify({ emits: 100, nativeCompiles: 25, bytes, nativeBytes, durationMs: Number((performance.now() - start).toFixed(2)) }));
+let sliceBytes = 0;
+for (let index = 0; index < 25; index += 1) {
+  const lines = [];
+  await runCli(['slice', nativePath, '--symbol', 'addTodo', '--focused-command', 'npm test -- addTodo'], { log: (value = '') => lines.push(String(value)) });
+  sliceBytes += lines.join('\n').length;
+}
+console.log(JSON.stringify({ emits: 100, nativeCompiles: 25, slices: 25, bytes, nativeBytes, sliceBytes, durationMs: Number((performance.now() - start).toFixed(2)) }));

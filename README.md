@@ -12,7 +12,11 @@ frontier-lang project-native native-import.json --source-only --out restored.ts
 frontier-lang native-compile native-import.json --target rust --emit-on-blocked --source-only --out todo.rs
 frontier-lang native-coverage src/todo.ts
 frontier-lang native-capabilities src/todo.ts --target rust
+frontier-lang slice src/parser.ts --symbol parseExpression --focused-command "npm test -- parser-expression" --out parser.slice.json
+frontier-lang test-slice parser.slice.json --source src/parser.ts
 ```
+
+`slice` extracts a `frontier.lang.semanticSlice` for a symbol, ownership region, native node, or source path. The slice includes source-map links, source hashes, conflict keys, focused commands, fixture hints, and merge-admission metadata so Frontier Swarm workers can operate on surgical context instead of full repo copies. `test-slice` validates that the slice is non-empty, refs resolved, conflict keys exist, source maps are present unless disabled, and supplied current source files still match the recorded hashes.
 
 ## Related Packages
 
@@ -208,7 +212,7 @@ npm install -g @shapeshift-labs/frontier-lang-cli
 frontier-lang check examples/todo.frontier
 ```
 
-Commands: `parse`, `check`, `hash`, `ast`, `capabilities`, `to-json`, `from-json`, `import`, `project-native`, `native-compile`, `native-coverage`, `native-capabilities`, `native-diff`, `roundtrip`, `corpus-roundtrip`, `emit`, `emit-ts`, `emit-js`, `emit-rust`, `emit-python`, and `emit-c`.
+Commands: `parse`, `check`, `hash`, `ast`, `capabilities`, `to-json`, `from-json`, `import`, `project-native`, `native-compile`, `native-coverage`, `native-capabilities`, `native-diff`, `slice`, `test-slice`, `roundtrip`, `corpus-roundtrip`, `emit`, `emit-ts`, `emit-js`, `emit-rust`, `emit-python`, and `emit-c`.
 
 ```sh
 frontier-lang emit app.frontier --target rust --out app.rs

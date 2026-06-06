@@ -12,14 +12,18 @@ import {
   createNativeSourcePreservation,
   createNativeImportCoverageMatrix,
   createSemanticImportSidecar,
+  createSemanticSlice,
   createUniversalAstFromDocument,
   createUniversalCapabilityMatrix,
   diffNativeSources,
   importNativeSource,
   projectNativeImportToSource,
   projectFrontierAst,
+  readSemanticSliceJson,
   readUniversalAstJson,
   resolveCapabilityAdapters,
+  testSemanticSlice,
+  writeSemanticSliceJson,
   writeUniversalAstJson
 } from '@shapeshift-labs/frontier-lang-compiler';
 
@@ -114,6 +118,37 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
       patchId: readOption(rest, '--patch-id'),
       mergeCandidateId: readOption(rest, '--merge-candidate-id'),
       metadata: { cli: true, beforePath: file, afterPath }
+    }));
+  }
+  if (command === 'slice') {
+    const imported = readNativeImportForProjection(file, source, rest);
+    const slice = createSemanticSlice(imported, {
+      id: readOption(rest, '--id'),
+      entryRefs: sliceEntryRefs(rest),
+      includeDependencies: !rest.includes('--no-deps'),
+      maxDependencyDepth: readIntegerOption(rest, '--max-depth'),
+      includeSourceText: !rest.includes('--no-source-text'),
+      maxExcerptBytes: readIntegerOption(rest, '--max-excerpt-bytes'),
+      focusedCommands: readOptions(rest, '--focused-command'),
+      fixtureHints: readOptions(rest, '--fixture-hint'),
+      metadata: { cli: true, inputPath: file }
+    });
+    if (rest.includes('--json-stable')) {
+      const json = writeSemanticSliceJson(slice);
+      const outIndex = rest.indexOf('--out');
+      if (outIndex >= 0 && rest[outIndex + 1]) writeFileSync(rest[outIndex + 1], json + '\n');
+      else io.log(json);
+      return;
+    }
+    return outputMaybeFile(io, rest, slice);
+  }
+  if (command === 'test-slice') {
+    const slice = readSemanticSliceJson(source);
+    return outputMaybeFile(io, rest, testSemanticSlice(slice, {
+      id: readOption(rest, '--id'),
+      requireSourceMapLinks: !rest.includes('--no-source-map-links'),
+      currentSources: readCurrentSources(rest),
+      metadata: { cli: true, inputPath: file }
     }));
   }
   const document = file ? parseFrontierFile(file, source) : parseFrontierSource(source);
@@ -366,6 +401,27 @@ function nativeCapabilityLanguages(imported, args) {
   return matches.length ? matches : undefined;
 }
 
+function sliceEntryRefs(args) {
+  return [
+    ...readOptions(args, '--ref'),
+    ...readOptions(args, '--semantic-ref'),
+    ...readOptions(args, '--symbol').map((value) => `symbol:${value}`),
+    ...readOptions(args, '--region').map((value) => `region:${value}`),
+    ...readOptions(args, '--native-node').map((value) => `native:${value}`),
+    ...readOptions(args, '--path').map((value) => `path:${value}`)
+  ];
+}
+
+function readCurrentSources(args) {
+  const paths = readOptions(args, '--source');
+  if (!paths.length) return undefined;
+  const currentSources = {};
+  for (const sourcePath of paths) {
+    currentSources[sourcePath] = readFileSync(sourcePath, 'utf8');
+  }
+  return currentSources;
+}
+
 function tryParseJson(source) {
   const trimmed = source.trim();
   if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return undefined;
@@ -388,8 +444,15 @@ function idFragment(value) {
   return String(value ?? 'unknown').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'unknown';
 }
 
-function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-compile|native-coverage|native-capabilities|native-diff|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--emit-on-blocked] [--all-languages] [--out file] [--strict-effects]'); }
+function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-compile|native-coverage|native-capabilities|native-diff|slice|test-slice|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--symbol name] [--region key] [--ref ref] [--source file] [--focused-command command] [--fixture-hint hint] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--emit-on-blocked] [--all-languages] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
+function readOptions(args, flag) {
+  const values = [];
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === flag && args[index + 1]) values.push(args[index + 1]);
+  }
+  return values;
+}
 function readIntegerOption(args, flag) {
   const value = readOption(args, flag);
   if (value === undefined) return undefined;

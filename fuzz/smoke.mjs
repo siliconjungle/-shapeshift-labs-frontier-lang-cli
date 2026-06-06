@@ -39,3 +39,14 @@ for (let index = 0; index < 20; index += 1) {
   assert.ok(result.output.length > 0);
   assert.ok(['javascript', 'rust'].includes(result.target));
 }
+
+for (let index = 0; index < 20; index += 1) {
+  const file = join(dir, `slice-${index}.ts`);
+  writeFileSync(file, `export function sliceCliCase${index}(value) { return value + ${index}; }\n`);
+  const lines = [];
+  await runCli(['slice', file, '--symbol', `sliceCliCase${index}`, '--focused-command', `npm test -- slice-cli-${index}`], { log: (value = '') => lines.push(String(value)) });
+  const slice = JSON.parse(lines.join('\n'));
+  assert.equal(slice.kind, 'frontier.lang.semanticSlice');
+  assert.equal(slice.unresolvedEntryRefs.length, 0);
+  assert.ok(slice.sourceMapLinks.length >= 1);
+}
