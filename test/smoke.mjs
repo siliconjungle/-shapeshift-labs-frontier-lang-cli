@@ -110,6 +110,14 @@ await runCli(['native-coverage', nativePath, '--parser', 'estree'], { log: (valu
 const nativeCoverage = JSON.parse(lines.join('\n'));
 assert.equal(nativeCoverage.kind, 'frontier.lang.nativeImportCoverageMatrix');
 assert.equal(nativeCoverage.summary.imports, 1);
+lines.length = 0;
+await runCli(['native-capabilities', nativePath, '--parser', 'estree', '--target', 'rust'], { log: (value = '') => lines.push(String(value)) });
+const nativeCapabilities = JSON.parse(lines.join('\n'));
+assert.equal(nativeCapabilities.kind, 'frontier.lang.universalCapabilityMatrix');
+assert.equal(nativeCapabilities.languages.length, 1);
+assert.equal(nativeCapabilities.languages[0].language, 'javascript');
+assert.equal(nativeCapabilities.summary.imports, 1);
+assert.deepEqual(nativeCapabilities.metadata.compileTargets, ['rust']);
 const nativeAfterPath = join(mkdtempSync(join(tmpdir(), 'frontier-lang-native-after-')), 'todo.js');
 writeFileSync(nativeAfterPath, 'export function addTodo() { return null; }\nexport function clearTodos() { return []; }\n');
 lines.length = 0;

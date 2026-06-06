@@ -6,12 +6,14 @@ import { parseFrontierFile, parseFrontierSource } from '@shapeshift-labs/frontie
 import { checkDocument } from '@shapeshift-labs/frontier-lang-checker';
 import { hashDocumentBase } from '@shapeshift-labs/frontier-lang-kernel';
 import {
+  NativeImportLanguageProfiles,
   compileNativeSource,
   compileFrontierDocument,
   createNativeSourcePreservation,
   createNativeImportCoverageMatrix,
   createSemanticImportSidecar,
   createUniversalAstFromDocument,
+  createUniversalCapabilityMatrix,
   diffNativeSources,
   importNativeSource,
   projectNativeImportToSource,
@@ -83,6 +85,15 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
     const language = readOption(rest, '--language') ?? inferLanguage(file);
     const imported = importNativeFile(file, source, rest, { language });
     return outputMaybeFile(io, rest, createNativeImportCoverageMatrix({ imports: [imported] }));
+  }
+  if (command === 'native-capabilities') {
+    const imported = readNativeImportForProjection(file, source, rest);
+    const target = readOption(rest, '--target');
+    return outputMaybeFile(io, rest, createUniversalCapabilityMatrix({
+      imports: [imported],
+      languages: nativeCapabilityLanguages(imported, rest),
+      targets: target ? [target] : undefined
+    }));
   }
   if (command === 'native-diff') {
     const afterPath = readOption(rest, '--after');
@@ -344,6 +355,17 @@ function readNativeImportForProjection(file, source, args) {
   return parsed;
 }
 
+function nativeCapabilityLanguages(imported, args) {
+  if (args.includes('--all-languages')) return undefined;
+  const language = imported?.language;
+  if (!language) return undefined;
+  const normalized = String(language).toLowerCase();
+  const matches = NativeImportLanguageProfiles.filter((profile) => (
+    profile.language === normalized || profile.aliases?.includes(normalized)
+  ));
+  return matches.length ? matches : undefined;
+}
+
 function tryParseJson(source) {
   const trimmed = source.trim();
   if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return undefined;
@@ -366,7 +388,7 @@ function idFragment(value) {
   return String(value ?? 'unknown').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'unknown';
 }
 
-function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-compile|native-coverage|native-diff|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--emit-on-blocked] [--out file] [--strict-effects]'); }
+function help(io) { io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-compile|native-coverage|native-capabilities|native-diff|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--emit-on-blocked] [--all-languages] [--out file] [--strict-effects]'); }
 function readOption(args, flag) { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; }
 function readIntegerOption(args, flag) {
   const value = readOption(args, flag);

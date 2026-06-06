@@ -242,7 +242,7 @@ if (!delegated) {
   {
     "id": "frontier-swarm",
     "name": "@shapeshift-labs/frontier-swarm",
-    "role": "Hierarchical swarm plans, lanes, compute profiles, ownership policy, semantic ownership regions, task queues, event streams, run records, merge bundles, merge indexes, queue overlays, merge admission, changed-path checks, and proof artifacts for Frontier agent work.",
+    "role": "Hierarchical swarm plans, lanes, compute profiles, ownership policy, semantic ownership regions, task queues, event streams, run records, merge bundles, merge indexes, queue overlays, merge admission, coordinator dashboards, changed-path checks, and proof artifacts for Frontier agent work.",
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-swarm",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-swarm",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-swarm"
@@ -250,7 +250,7 @@ if (!delegated) {
   {
     "id": "frontier-swarm-codex",
     "name": "@shapeshift-labs/frontier-swarm-codex",
-    "role": "Node Codex CLI adapter for Frontier swarm plans, including prompt rendering, worktree and snapshot workspaces, Codex argument compatibility, browser resource allocation, JSONL capture, verification commands, pid-backed stop, collect/apply workflows, merge indexes, queue overlays, merge bundles, and result artifacts.",
+    "role": "Node Codex CLI adapter for Frontier swarm plans, including prompt rendering, worktree and snapshot workspaces, Codex argument compatibility, browser resource allocation, JSONL capture, verification commands, pid-backed stop, collect/apply workflows, merge indexes, queue overlays, merge bundles, normalized job evidence, coordinator query artifacts, and result artifacts.",
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-swarm-codex",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-swarm-codex",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-swarm-codex"
@@ -322,7 +322,7 @@ if (!delegated) {
   {
     "id": "frontier-lang-compiler",
     "name": "@shapeshift-labs/frontier-lang-compiler",
-    "role": "Compiler facade for Frontier Lang source documents, including parse, check, hash, diagnostics, projection to TypeScript, JavaScript, Rust, Python, and C, and native source-import adapters for semantic merge evidence.",
+    "role": "Compiler facade for Frontier Lang source documents, including parse, check, hash, diagnostics, universal AST envelopes, proof/paradigm semantic summaries, projection to TypeScript, JavaScript, Rust, Python, and C, and native source-import adapters for semantic merge evidence.",
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-compiler",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-compiler",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-compiler"
@@ -386,7 +386,7 @@ if (!delegated) {
   {
     "id": "frontier-lang",
     "name": "@shapeshift-labs/frontier-lang",
-    "role": "Umbrella package for Frontier Lang kernel, parser, checker, and projection adapters.",
+    "role": "Umbrella package for Frontier Lang kernel, parser, checker, compiler facade, universal AST helpers, and projection adapters.",
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-lang",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang"
