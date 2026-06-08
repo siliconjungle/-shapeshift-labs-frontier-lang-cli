@@ -1,0 +1,3 @@
+export function help(io) {
+  io.log('frontier-lang <parse|check|hash|ast|capabilities|to-json|from-json|import|project-native|native-compile|native-coverage|native-capabilities|native-diff|slice|test-slice|roundtrip|corpus-roundtrip|emit|emit-ts|emit-js|emit-rust|emit-python|emit-c> <file> [--after file] [--target target] [--language language] [--parser parser] [--platform platform] [--symbol name] [--region key] [--ref ref] [--source file] [--focused-command command] [--fixture-hint hint] [--ast] [--sidecar] [--sidecar-only] [--source-only] [--stubs] [--emit-on-blocked] [--all-languages] [--out file] [--strict-effects]');
+}

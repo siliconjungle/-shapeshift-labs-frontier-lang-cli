@@ -14,9 +14,12 @@ frontier-lang native-coverage src/todo.ts
 frontier-lang native-capabilities src/todo.ts --target rust
 frontier-lang slice src/parser.ts --symbol parseExpression --focused-command "npm test -- parser-expression" --out parser.slice.json
 frontier-lang test-slice parser.slice.json --source src/parser.ts
+frontier-lang corpus-roundtrip ./src --target rust --out corpus-evidence.json
 ```
 
 `slice` extracts a `frontier.lang.semanticSlice` for a symbol, ownership region, native node, or source path. The slice includes source-map links, source hashes, conflict keys, focused commands, fixture hints, and merge-admission metadata so Frontier Swarm workers can operate on surgical context instead of full repo copies. `test-slice` validates that the slice is non-empty, refs resolved, conflict keys exist, source maps are present unless disabled, and supplied current source files still match the recorded hashes.
+
+`corpus-roundtrip` scans a file, manifest, or directory and records native-source import, universal AST JSON, source preservation, projection review, semantic sidecar quality, and merge-signal summaries for mixed-language conversion evidence.
 
 ## Related Packages
 
@@ -66,7 +69,7 @@ The published Frontier package family is generated from one shared package catal
 - [`@shapeshift-labs/frontier-lang-go`](https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-go): Go source-language importer package for Frontier Lang semantic documents, including package-level metadata, Go AST adapter helpers, native import results, and semantic sidecar generation for go/ast File or Package trees.
 - [`@shapeshift-labs/frontier-lang-csharp`](https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-csharp): C# Roslyn source-language importer package for Frontier Lang semantic documents, including package-level metadata, Roslyn adapter helpers, native import results, and semantic sidecar generation for SyntaxTree/SyntaxNode-shaped ASTs.
 - [`@shapeshift-labs/frontier-lang-clang`](https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-clang): Clang AST source-language importer package for Frontier Lang semantic documents, including package-level metadata, Clang AST JSON adapter helpers, native import results, and semantic sidecar generation for C/C++ translation units.
-- [`@shapeshift-labs/frontier-lang`](https://www.npmjs.com/package/@shapeshift-labs/frontier-lang): Umbrella package for Frontier Lang kernel, parser, checker, compiler facade, universal AST helpers, and projection adapters.
+- [`@shapeshift-labs/frontier-lang`](https://www.npmjs.com/package/@shapeshift-labs/frontier-lang): Umbrella package for Frontier Lang kernel, parser, checker, compiler facade, universal AST helpers, projection adapters, and source-language importer adapters.
 - [`@shapeshift-labs/frontier-kv`](https://www.npmjs.com/package/@shapeshift-labs/frontier-kv): Serializable in-memory key/value state for Frontier apps, including TTL, versioned compare-and-set, batched patch mutations, scans, watchers, snapshots, JSONL event evidence, and replay verification.
 - [`@shapeshift-labs/frontier-kv-locks`](https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-locks): Lease-style lock records on top of Frontier KV, including acquire, renew, release, fencing tokens, expiration, owner evidence, and replayable lock events.
 - [`@shapeshift-labs/frontier-kv-rate-limit`](https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-rate-limit): Patch-native rate limit buckets for Frontier KV, including fixed windows, sliding windows, token buckets, deterministic refill, consume evidence, and reset records.

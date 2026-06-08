@@ -1,0 +1,242 @@
+[
+  {
+    "id": "frontier-lang-parser",
+    "name": "@shapeshift-labs/frontier-lang-parser",
+    "role": "Dependency-light Frontier Lang parser for modules, entities, state, actions, effects, types, externs, targets, and lattice declarations.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-parser",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-parser",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-parser"
+  },
+  {
+    "id": "frontier-lang-checker",
+    "name": "@shapeshift-labs/frontier-lang-checker",
+    "role": "Checker and diagnostics for Frontier Lang semantic documents, including type symbols, effects, regions, lattice laws, CRDT metadata, and patch evidence.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-checker",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-checker",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-checker"
+  },
+  {
+    "id": "frontier-lang-typescript",
+    "name": "@shapeshift-labs/frontier-lang-typescript",
+    "role": "TypeScript projection adapter for Frontier Lang semantic documents, including type/entity/state/action/extern declarations and CRDT lattice descriptors.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-typescript",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-typescript",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-typescript"
+  },
+  {
+    "id": "frontier-lang-javascript",
+    "name": "@shapeshift-labs/frontier-lang-javascript",
+    "role": "JavaScript projection adapter for Frontier Lang semantic documents, including ESM action stubs and schema/lattice descriptors.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-javascript",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-javascript",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-javascript"
+  },
+  {
+    "id": "frontier-lang-rust",
+    "name": "@shapeshift-labs/frontier-lang-rust",
+    "role": "Rust projection adapter for Frontier Lang semantic documents, including structs, aliases, and action stubs.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-rust",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-rust",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-rust"
+  },
+  {
+    "id": "frontier-lang-python",
+    "name": "@shapeshift-labs/frontier-lang-python",
+    "role": "Python projection adapter for Frontier Lang semantic documents, including dataclasses, typed patch records, and action stubs.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-python",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-python",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-python"
+  },
+  {
+    "id": "frontier-lang-c",
+    "name": "@shapeshift-labs/frontier-lang-c",
+    "role": "C header projection adapter for Frontier Lang semantic documents, including structs and action prototypes.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-c",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-c",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-c"
+  },
+  {
+    "id": "frontier-lang-compiler",
+    "name": "@shapeshift-labs/frontier-lang-compiler",
+    "role": "Compiler facade for Frontier Lang source documents, including parse, check, hash, diagnostics, universal AST envelopes, proof/paradigm semantic summaries, projection to TypeScript, JavaScript, Rust, Python, and C, and native source-import adapters for semantic merge evidence.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-compiler",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-compiler",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-compiler"
+  },
+  {
+    "id": "frontier-lang-swift",
+    "name": "@shapeshift-labs/frontier-lang-swift",
+    "role": "Swift source-language importer package for Frontier Lang semantic documents, including package-level metadata, SwiftSyntax adapter helpers, native import results, and semantic sidecar generation for SwiftSyntax/SwiftParser-shaped syntax trees.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-swift",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-swift",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-swift"
+  },
+  {
+    "id": "frontier-lang-kotlin",
+    "name": "@shapeshift-labs/frontier-lang-kotlin",
+    "role": "Kotlin PSI source-language importer package for Frontier Lang semantic documents, including package-level metadata, Kotlin PSI adapter helpers, native import results, and semantic sidecar generation for Kotlin PSI/KtFile-shaped syntax trees.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-kotlin",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-kotlin",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-kotlin"
+  },
+  {
+    "id": "frontier-lang-java",
+    "name": "@shapeshift-labs/frontier-lang-java",
+    "role": "Java source-language importer package for Frontier Lang semantic documents, including package-level metadata, Java AST adapter helpers, native import results, and semantic sidecar generation for javac/JDT/JavaParser-shaped ASTs.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-java",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-java",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-java"
+  },
+  {
+    "id": "frontier-lang-go",
+    "name": "@shapeshift-labs/frontier-lang-go",
+    "role": "Go source-language importer package for Frontier Lang semantic documents, including package-level metadata, Go AST adapter helpers, native import results, and semantic sidecar generation for go/ast File or Package trees.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-go",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-go",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-go"
+  },
+  {
+    "id": "frontier-lang-csharp",
+    "name": "@shapeshift-labs/frontier-lang-csharp",
+    "role": "C# Roslyn source-language importer package for Frontier Lang semantic documents, including package-level metadata, Roslyn adapter helpers, native import results, and semantic sidecar generation for SyntaxTree/SyntaxNode-shaped ASTs.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-csharp",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-csharp",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-csharp"
+  },
+  {
+    "id": "frontier-lang-clang",
+    "name": "@shapeshift-labs/frontier-lang-clang",
+    "role": "Clang AST source-language importer package for Frontier Lang semantic documents, including package-level metadata, Clang AST JSON adapter helpers, native import results, and semantic sidecar generation for C/C++ translation units.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-clang",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-clang",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-clang"
+  },
+  {
+    "id": "frontier-lang-cli",
+    "name": "@shapeshift-labs/frontier-lang-cli",
+    "role": "Command line interface for parsing, checking, hashing, and emitting Frontier Lang projects.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-cli",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-cli",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-cli"
+  },
+  {
+    "id": "frontier-lang",
+    "name": "@shapeshift-labs/frontier-lang",
+    "role": "Umbrella package for Frontier Lang kernel, parser, checker, compiler facade, universal AST helpers, and projection adapters.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-lang",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang"
+  },
+  {
+    "id": "frontier-kv",
+    "name": "@shapeshift-labs/frontier-kv",
+    "role": "Serializable in-memory key/value state for Frontier apps, including TTL, versioned compare-and-set, batched patch mutations, scans, watchers, snapshots, JSONL event evidence, and replay verification.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv"
+  },
+  {
+    "id": "frontier-kv-locks",
+    "name": "@shapeshift-labs/frontier-kv-locks",
+    "role": "Lease-style lock records on top of Frontier KV, including acquire, renew, release, fencing tokens, expiration, owner evidence, and replayable lock events.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-locks",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv-locks",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv-locks"
+  },
+  {
+    "id": "frontier-kv-rate-limit",
+    "name": "@shapeshift-labs/frontier-kv-rate-limit",
+    "role": "Patch-native rate limit buckets for Frontier KV, including fixed windows, sliding windows, token buckets, deterministic refill, consume evidence, and reset records.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-rate-limit",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv-rate-limit",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv-rate-limit"
+  },
+  {
+    "id": "frontier-kv-file",
+    "name": "@shapeshift-labs/frontier-kv-file",
+    "role": "Node file persistence adapter for Frontier KV snapshots and append-only JSONL event logs, including atomic writes, compaction, replay loading, and adapter evidence.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-file",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv-file",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv-file"
+  },
+  {
+    "id": "frontier-kv-idb",
+    "name": "@shapeshift-labs/frontier-kv-idb",
+    "role": "IndexedDB persistence adapter for Frontier KV snapshots and event logs, with structural IDB interfaces, upgrade planning, compact event storage, and replay loading.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-idb",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv-idb",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv-idb"
+  },
+  {
+    "id": "frontier-kv-redis",
+    "name": "@shapeshift-labs/frontier-kv-redis",
+    "role": "Redis-compatible command planning and structural client adapter for Frontier KV operations, including key mapping, TTL commands, optimistic CAS scripts, and replay evidence without bundling Redis drivers.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-redis",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv-redis",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv-redis"
+  },
+  {
+    "id": "frontier-kv-server",
+    "name": "@shapeshift-labs/frontier-kv-server",
+    "role": "Small Node HTTP server adapter for Frontier KV, including request planning, JSON endpoints for get/set/delete/scan/batch, optional rate-limit hooks, and replayable response evidence.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-kv-server",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-kv-server",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-kv-server"
+  },
+  {
+    "id": "frontier-assets",
+    "name": "@shapeshift-labs/frontier-assets",
+    "role": "Serializable asset and content provenance graphs for Frontier apps, including source files, generated variants, thumbnails, LOD chunks, shader/material dependencies, transforms, hashes, owners, runtime consumers, review plans, registry graph output, and impact queries.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-assets",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-assets",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-assets"
+  },
+  {
+    "id": "frontier-blueprint",
+    "name": "@shapeshift-labs/frontier-blueprint",
+    "role": "Serializable Blueprint/Prefab flyweight templates for Frontier apps, including parameterized instantiation, deterministic ID/path remapping, compact overrides, variants, effective-state materialization, scene/state patch emission, dependency metadata, and registry graph output.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-blueprint",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-blueprint",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-blueprint"
+  },
+  {
+    "id": "frontier-triggers",
+    "name": "@shapeshift-labs/frontier-triggers",
+    "role": "Capability-gated event trigger registry, scoped event envelopes, listener/reaction rules, structured rejection, deterministic event-to-action scheduling, replay/provenance records, and registry graph output.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-triggers",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-triggers",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-triggers"
+  },
+  {
+    "id": "frontier-virtual",
+    "name": "@shapeshift-labs/frontier-virtual",
+    "role": "DOM-neutral virtualization, layout providers, range materialization, grids, spatial/frustum indexes, patch invalidation, camera anchors, and serializable layout state.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-virtual",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-virtual",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-virtual"
+  },
+  {
+    "id": "frontier-table",
+    "name": "@shapeshift-labs/frontier-table",
+    "role": "Renderer-neutral data grid and table primitives for Frontier apps, including stable row identity, sorting, filtering, selection, virtual ranges, patch-driven edits, cache/dataflow descriptors, and CRDT-compatible row and cell operation frames.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-table",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-table",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-table"
+  },
+  {
+    "id": "frontier-scene",
+    "name": "@shapeshift-labs/frontier-scene",
+    "role": "Patch-native 2D/3D scene graph, transform propagation, bounds queries, virtual/culling adapters, spatial invalidation, and camera/frustum materialization.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-scene",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-scene",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-scene"
+  },
+  {
+    "id": "frontier-pathfinding",
+    "name": "@shapeshift-labs/frontier-pathfinding",
+    "role": "Patch-native grid pathfinding, typed-array A*/Dijkstra search, flow fields, connected components, line-of-sight smoothing, dirty-cell invalidation, and scheduler-friendly path jobs.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-pathfinding",
+    "repoName": "siliconjungle/-shapeshift-labs-frontier-pathfinding",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-pathfinding"
+  }
+]
