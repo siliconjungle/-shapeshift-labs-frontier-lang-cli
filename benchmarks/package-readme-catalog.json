@@ -354,7 +354,7 @@
   {
     "id": "frontier-lang-cli",
     "name": "@shapeshift-labs/frontier-lang-cli",
-    "role": "Command line interface for parsing, checking, hashing, and emitting Frontier Lang projects.",
+    "role": "Command line interface for parsing, checking, hashing, emitting, native source import/projection, semantic slicing, and corpus roundtrip evidence for Frontier Lang projects.",
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-lang-cli",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-lang-cli",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-cli"
