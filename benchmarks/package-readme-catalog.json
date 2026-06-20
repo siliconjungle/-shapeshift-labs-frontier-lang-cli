@@ -718,5 +718,13 @@
     "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/frontier-game",
     "repoName": "siliconjungle/-shapeshift-labs-frontier-game",
     "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-frontier-game"
+  },
+  {
+    "id": "loom",
+    "name": "@shapeshift-labs/loom",
+    "role": "Repo-level semantic collaboration CLI for .loom workspaces, including init, scan, status, graph snapshots, projection plans, Frontier Lang delegation, Frontier Swarm delegation, and Frontier Framework delegation.",
+    "npmUrl": "https://www.npmjs.com/package/@shapeshift-labs/loom",
+    "repoName": "siliconjungle/-shapeshift-labs-loom",
+    "repoUrl": "https://github.com/siliconjungle/-shapeshift-labs-loom"
   }
 ]
