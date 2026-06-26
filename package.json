@@ -1,6 +1,6 @@
 {
   "name": "@shapeshift-labs/frontier-lang-cli",
-  "version": "0.3.45",
+  "version": "0.3.46",
   "description": "Command line interface for parsing, checking, hashing, and emitting Frontier Lang projects.",
   "type": "module",
   "main": "./dist/index.js",
@@ -44,7 +44,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-cli.git"
+    "url": "git+ssh://git@github.com/siliconjungle/-shapeshift-labs-frontier-lang-cli.git"
   },
   "bugs": {
     "url": "https://github.com/siliconjungle/-shapeshift-labs-frontier-lang-cli/issues"
@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@shapeshift-labs/frontier-lang-checker": "0.3.8",
-    "@shapeshift-labs/frontier-lang-compiler": "0.2.162",
+    "@shapeshift-labs/frontier-lang-compiler": "0.2.163",
     "@shapeshift-labs/frontier-lang-kernel": "0.3.12",
     "@shapeshift-labs/frontier-lang-parser": "0.3.8"
   },
