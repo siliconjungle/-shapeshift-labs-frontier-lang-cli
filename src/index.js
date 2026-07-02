@@ -10,6 +10,8 @@ import {
   createNativeImportCoverageMatrix,
   createSemanticImportSidecar,
   createSemanticSlice,
+  createUniversalConversionArtifactsFromFrontierSource,
+  createUniversalConversionPlanFromFrontierSource,
   createUniversalAstFromDocument,
   createUniversalCapabilityMatrix,
   diffNativeSources,
@@ -135,6 +137,12 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
       metadata: { cli: true, beforePath: file, afterPath }
     }));
   }
+  if (command === 'source-plan' || command === 'conversion-plan') {
+    return outputMaybeFile(io, rest, createUniversalConversionPlanFromFrontierSource(source, frontierSourceConversionOptions(file, rest)));
+  }
+  if (command === 'source-artifacts' || command === 'conversion-artifacts') {
+    return outputMaybeFile(io, rest, createUniversalConversionArtifactsFromFrontierSource(source, frontierSourceConversionOptions(file, rest)));
+  }
   if (command === 'slice') {
     const imported = readNativeImportForProjection(file, source, rest);
     const slice = createSemanticSlice(imported, {
@@ -214,6 +222,18 @@ export async function runCli(argv = process.argv.slice(2), io = console) {
     return;
   }
   throw new Error(`Unknown command: ${command}`);
+}
+
+function frontierSourceConversionOptions(file, args) {
+  const targets = readOptions(args, '--target');
+  return {
+    fileName: file,
+    sourcePath: readOption(args, '--source-path') ?? file,
+    ...(readOption(args, '--id') ? { id: readOption(args, '--id') } : {}),
+    ...(targets.length ? { targets } : {}),
+    ...(readOption(args, '--source-runtime') ? { sourceRuntime: readOption(args, '--source-runtime') } : {}),
+    ...(readOption(args, '--target-runtime') ? { targetRuntime: readOption(args, '--target-runtime') } : {})
+  };
 }
 
 function isDirectInvocation() {

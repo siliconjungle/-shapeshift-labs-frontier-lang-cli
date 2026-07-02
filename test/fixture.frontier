@@ -62,3 +62,15 @@ nativeSource TodoTypescript @id("native_todo_ts") {
   loss unsupportedSyntax "decorator retained in native AST" severity warning
 }
 }
+
+possibilitySpace TodoProjectionSpace @id("space_todo_projection") {
+  subject symbol:addTodo
+  scope mod_todo
+  target typescript
+  target rust
+  variable surface @id("space_variable_surface") kind projection domain typescript|rust|cli default typescript preserve identity|type-shape evidence evidence_todo_projection
+  hard identity @id("space_constraint_identity") kind semantic-identity family identity subject symbol:addTodo variable space_variable_surface requires type|binding failClosed evidence evidence_todo_projection
+  preference nativeShape @id("space_preference_native_shape") kind target-idiom target rust weight 0.6 variable space_variable_surface prefer rust-function reason "prefer idiomatic target action surface"
+  collapse rustProjection @id("space_collapse_rust_projection") strategy evidence-first target rust variable space_variable_surface requires identity|type-gate produces symbol:addTodoRust evidence evidence_todo_projection admission space_admission_translation
+  admission translation @id("space_admission_translation") kind translation status open target rust requires hardConstraints|typeGate decision review failClosed evidence evidence_todo_projection
+}
