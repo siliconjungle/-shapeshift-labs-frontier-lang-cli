@@ -1,4 +1,7 @@
 module TodoApp @id("mod_todo") {
+type TodoId @id("type_todo_id") {
+  = Text
+}
 type TodoInput @id("type_todo_input") {
   title: Text
   tags: Set<Text>
@@ -11,6 +14,9 @@ lattice TagSet @id("lat_tag_set") {
 entity Todo @id("ent_todo") {
   title @id("field_title"): Text { merge conflict }
   tags @id("field_tags"): Set<Text> { merge union lattice lat_tag_set crdt or-set }
+}
+state TodoDb @id("state_todo") {
+  todos @id("collection_todos"): Map<TodoId, Todo> { merge byKey law commutative }
 }
 extern persistTodo @id("extern_persist") {
   language typescript
@@ -30,6 +36,29 @@ capability HttpRequest @id("cap_http") {
 action addTodo @id("action_add") {
   input TodoInput
   returns Patch
+  reads TodoDb.todos
+  writes TodoDb.todos
   uses storage, http.request
+}
+effect PersistTodo @id("effect_persist") {
+  capability storage.write
+  input TodoInput
+  returns Json
+  resources TodoDb.todos
+}
+target typescript @id("target_ts") {
+  language typescript
+  package @example/todo
+  emitPath src/generated/todo.ts
+  moduleFormat esm
+}
+nativeSource TodoTypescript @id("native_todo_ts") {
+  language typescript
+  parser typescript
+  sourcePath src/todo.ts
+  sourceHash sha256:todo
+  symbol Todo
+  frontierNodes ent_todo, action_add
+  loss unsupportedSyntax "decorator retained in native AST" severity warning
 }
 }
