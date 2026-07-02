@@ -1,6 +1,6 @@
 {
   "name": "@shapeshift-labs/frontier-lang-cli",
-  "version": "0.3.96",
+  "version": "0.3.97",
   "description": "Command line interface for parsing, checking, hashing, and emitting Frontier Lang projects.",
   "type": "module",
   "main": "./dist/index.js",
@@ -55,9 +55,9 @@
   },
   "dependencies": {
     "@shapeshift-labs/frontier-lang-checker": "0.3.8",
-    "@shapeshift-labs/frontier-lang-compiler": "0.2.332",
+    "@shapeshift-labs/frontier-lang-compiler": "0.2.333",
     "@shapeshift-labs/frontier-lang-kernel": "0.3.13",
-    "@shapeshift-labs/frontier-lang-parser": "0.3.19"
+    "@shapeshift-labs/frontier-lang-parser": "0.3.20"
   },
   "bin": {
     "frontier-lang": "dist/index.js"
